@@ -74,7 +74,10 @@ def insert_guest():
 
     # Insert the guest dict into the shelf
     with shelve.open(shelf_name) as shelf:
-        guest_list = shelf[guest_list_key]
+        try:
+            guest_list = shelf[guest_list_key]
+        except KeyError:
+            guest_list = []
         guest_list.append(guest_dict)
         shelf[guest_list_key] = guest_list
     return json.dumps({'response': "Successfully added guest"}), 201
