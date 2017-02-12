@@ -1,0 +1,55 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-xl-6 col-sm-12 col-md-7 col-xs-12">
+            <h3>RSVP</h3>
+            <form>
+                <fieldset>
+                    <div class="form-group">
+                        <label class="" for="textinput">First Name</label>
+                        <input ng-model="guest.firstName" id="textinput" type="text" placeholder="First Name" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="lastname">Last Name</label>
+                        <input ng-model="guest.lastName" id="lastname" name="lastname" type="text" placeholder="Last Name" class="form-control" required="">
+                    </div>
+                    <div ng-show="alertMsg">
+                        <div ng-if="success" class="alert alert-success" role="alert">{{alertMsg}}</div>
+                        <div ng-if="!success" class="alert alert-warning" role="alert">{{alertMsg}}</div>
+                    </div>
+                </fieldset>
+            </form>
+
+
+                <table ng-show="rsvpSearchResults.length" class="table">
+                    <thead>
+                        <tr>
+                            <th>Guest</th>
+                            <th>Status</th>
+                            <th>RSVP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr ng-repeat="result in rsvpSearchResults">
+                            <td>{{result.firstName + " " + result.lastName}}</td>
+                            <td>{{getStatus(result)}}</td>
+                            <td>
+                                <form class="form-inline">
+                                    <label class="radio-inline">
+                                        <input ng-model="guest.answer" type="radio" name="inlineRadioOptions" id="acceptRSVP" value="true"> Accept
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input ng-model="guest.answer" type="radio" name="inlineRadioOptions" id="declineRSVP" value="false"> Decline
+                                    </label>
+                                    <button class="btn btn-sm btn-primary modal-submit-button" type="button" ng-click="saveRSVP(result)">Submit RSVP</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            <button class="btn btn-primary modal-submit-button" ng-disabled="!(guest.firstName && guest.lastName)" type="button" ng-click="searchGuest()">Search</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+<div ng-controller="GuestListCtrl" class="container">
+    <h1>Manage Guests</h1>
+    <h4 class="top-buffer">Total Guest Count: {{ guests.length }}</h4>
+    <h4 class="top-buffer">Total RSVP Count: {{ total_rsvp }}</h4>
+
+    <hr>
+    <form class="inline-form">
+        <h3 class="modal-title" id="modal-title">Add Guest</h3>
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input ng-model="guestModel.firstName" type="text"
+                   class="form-control"
+                   id="fistName" placeholder="First Name">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input ng-model="guestModel.lastName" type="text"
+                   class="form-control"
+                   id="lastName" placeholder="Last Name">
+        </div>
+        <button class="btn btn-primary modal-submit-button" type="button"
+                ng-click="addGuest()">Save Guest
+        </button>
+        <button class="btn btn-warning modal-cancel-button" type="button"
+                ng-click="cancel()">Cancel
+        </button>
+    </form>
+
+    <hr>
+
+    <h3>Guest List</h3>
+    <form class="top-buffer form-inline">
+
+        <input class="form-control" placeholder="Search" id="Search"
+               ng-model="search"
+               ng-change="updateSearch()">
+    </form>
+
+    <table class="table top-buffer" ng-show="guests.length">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Remove</th>
+        </tr>
+
+        </thead>
+        <tbody>
+        <tr ng-repeat="guest in guests | filter:search">
+            <td>{{ guest.firstName + " " + guest.lastName }}</td>
+            <td>{{ guest.RSVP ? "YES" : "NO"}}</td>
+            <td><a ng-click="deleteGuest(guest)"
+                   class="left-margin"
+                   href="">delete</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
