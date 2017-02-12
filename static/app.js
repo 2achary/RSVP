@@ -83,6 +83,18 @@ app.controller('GuestListCtrl', function ($scope, RSVP, Guest) {
         $scope.updateGuestQuery();
     };
 
+    $scope.getStatus = function(guest){
+        if (guest.RSVP){
+            return 'Coming';
+        } else {
+            if (guest.RSVP === false) {
+                return 'Not Coming';
+            } else {
+                return 'Not Submitted';
+            }
+        }
+    };
+
     $scope.deleteGuest = function (guest) {
         Guest.delete(guest);
         $scope.updateGuestQuery();

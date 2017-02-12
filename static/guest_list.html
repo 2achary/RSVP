@@ -1,7 +1,7 @@
 <div ng-controller="GuestListCtrl" class="container">
     <h1>Manage Guests</h1>
     <h4 class="top-buffer">Total Guest Count: {{ guests.length }}</h4>
-    <h4 class="top-buffer">Total RSVP Count: {{ total_rsvp }}</h4>
+    <h4 class="top-buffer">Total Accepted RSVP Count: {{ total_rsvp }}</h4>
 
     <hr>
     <form class="inline-form">
@@ -48,7 +48,7 @@
         <tbody>
         <tr ng-repeat="guest in guests | filter:search">
             <td>{{ guest.firstName + " " + guest.lastName }}</td>
-            <td>{{ guest.RSVP ? "YES" : "NO"}}</td>
+            <td>{{ getStatus(guest) }}</td>
             <td><a ng-click="deleteGuest(guest)"
                    class="left-margin"
                    href="">delete</a></td>
