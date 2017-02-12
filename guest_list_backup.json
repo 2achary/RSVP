@@ -1,13 +1,11 @@
 [
     {
         "lastName": "Swift",
-        "firstName": "Larry",
-        "_id": "1"
+        "firstName": "Larry"
     },
     {
         "lastName": "Swift",
-        "firstName": "Debbie",
-        "_id": "1"
+        "firstName": "Debbie"
     },
     {
         "lastName": "Fox",
