@@ -1,3 +1,8 @@
+"""
+Navigate to 127.0.0.1 to get to the RSVP form
+Navigate to 127.0.0.1/#/guest_list to get to the Guest management page
+"""
+
 from flask import Flask, make_response, request
 import json
 import os
@@ -14,7 +19,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def new_site_home():
+def rsvp_form():
     return make_response(open('static/index.html').read())
 
 
