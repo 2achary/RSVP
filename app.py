@@ -1,6 +1,13 @@
 """
+Simple guest and RSVP management API for a single event
+
+Uses python shelve for local object persistence. Edit `guest_list_backup.json`
+to include names you want auto-populated in the shelf. If you delete the
+shelve file `guest_list.shelf.db` and re-run the API directly, the json file
+will be used to populate the shelf.
+
 Navigate to 127.0.0.1 to get to the RSVP form
-Navigate to 127.0.0.1/#/guest_list to get to the Guest management page
+Navigate to 127.0.0.1/#/guest_list to get to the guest management page
 """
 
 from flask import Flask, make_response, request
