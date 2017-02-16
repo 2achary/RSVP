@@ -65,6 +65,10 @@ app.controller('GuestListCtrl', function ($scope, RSVP, Guest) {
     $scope.guestModel = {};
     $scope.guests = [];
 
+    $scope.clearForm = function(){
+        $scope.guestModel = {};
+    }
+
     $scope.updateGuestQuery = function() {
         $scope.guests = Guest.query(function(guests){
             $scope.total_rsvp = 0;
