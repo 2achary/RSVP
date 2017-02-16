@@ -9,7 +9,6 @@ will be used to populate the shelf.
 Navigate to 127.0.0.1 to get to the RSVP form
 Navigate to 127.0.0.1/#/guest_list to get to the guest management page
 """
-
 from flask import Flask, make_response, request
 import json
 import os
@@ -42,7 +41,7 @@ def make_shelf_if_needed():
 
 
 def get_guest_from_args(args):
-    guest =  {
+    guest = {
         'firstName': args.get('firstName'),
         'lastName': args.get('lastName')
     }
