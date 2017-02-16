@@ -132,13 +132,16 @@ def rsvp():
     with shelve.open(shelf_name) as shelf:
         guest_list = shelf[guest_list_key]
         try:
-            # Update the rsvp status
+            # Find the guest matching the query string and its index
+            # in the guest list
             matching_guest = find_guest_in_list(guest_dict, guest_list)
             matching_index = guest_list.index(matching_guest)
         except ValueError:
             return json.dumps({"response": "Guest not found"}), 404
 
+        # Update the rsvp status
         guest_list[matching_index]['RSVP'] = answer
+        # Store the updated guest_list back in the shlef
         shelf[guest_list_key] = guest_list
         return json.dumps({"response": "Successfully submitted RSVP"})
 
