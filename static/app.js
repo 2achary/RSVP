@@ -67,7 +67,7 @@ app.controller('GuestListCtrl', function ($scope, RSVP, Guest) {
 
     $scope.clearForm = function(){
         $scope.guestModel = {};
-    }
+    };
 
     $scope.updateGuestQuery = function() {
         $scope.guests = Guest.query(function(guests){
@@ -83,7 +83,7 @@ app.controller('GuestListCtrl', function ($scope, RSVP, Guest) {
     $scope.updateGuestQuery();
 
     $scope.addGuest = function () {
-;        Guest.save($scope.guestModel);
+        Guest.save($scope.guestModel);
         $scope.updateGuestQuery();
     };
 

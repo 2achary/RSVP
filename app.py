@@ -6,6 +6,11 @@ to include names you want auto-populated in the shelf. If you delete the
 shelve file `guest_list.shelf.db` and re-run the API directly, the json file
 will be used to populate the shelf.
 
+```
+pip3 install flask
+python3 app.py
+```
+
 Navigate to 127.0.0.1 to get to the RSVP form
 Navigate to 127.0.0.1/#/guest_list to get to the guest management page
 """
