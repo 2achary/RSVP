@@ -14,11 +14,11 @@ python3 app.py
 Navigate to 127.0.0.1 to get to the RSVP form
 Navigate to 127.0.0.1/#/guest_list to get to the guest management page
 """
-from flask import Flask, make_response, request
 import json
 import os
 import shelve
 
+from flask import Flask, make_response, request
 
 shelf_name = 'guest_list.shelf'
 guest_list_key = 'guest_list'
@@ -77,13 +77,13 @@ def insert_guest():
         return json.dumps({"response": "First and last name required"}), 406
 
     # Insert the guest dict into the shelf
-    with shelve.open(shelf_name) as shelf:
+    with shelve.open(shelf_name, writeback=True) as shelf:
         try:
             guest_list = shelf[guest_list_key]
         except KeyError:
             guest_list = []
         guest_list.append(guest_dict)
-        shelf[guest_list_key] = guest_list
+        # shelf[guest_list_key] = guest_list
     return json.dumps({'response': "Successfully added guest"}), 201
 
 
@@ -95,12 +95,13 @@ def delete_guest():
         # Return 406 Unacceptable status code
         return json.dumps({"response": "First and last name required"}), 406
 
-    with shelve.open(shelf_name) as shelf:
+    with shelve.open(shelf_name, writeback=False) as shelf:
         # Get a copy of the current guest list
         guest_list = shelf[guest_list_key]
         try:
             # Try to remove the dict from the guest list
-            guest_list.remove(guest_dict)
+            guest_record = find_guest_in_list(guest_dict, guest_list)
+            guest_list.remove(guest_record)
         except ValueError:
             # Return a not found status code
             return json.dumps({'response': "Guest not found"}), 404
@@ -109,7 +110,7 @@ def delete_guest():
 
 
 @app.route('/guest', methods=['GET'])
-def get_guest_list():
+def get_guest():
     with shelve.open(shelf_name) as shelf:
         guest_list = shelf[guest_list_key]
         try:
