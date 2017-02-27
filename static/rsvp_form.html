@@ -21,7 +21,7 @@
             </form>
 
 
-                <table ng-show="rsvpSearchResults.length" class="table">
+                <table ng-show="rsvpSearchResult.firstName" class="table">
                     <thead>
                         <tr>
                             <th>Guest</th>
@@ -31,9 +31,9 @@
                     </thead>
                     <tbody>
 
-                        <tr ng-repeat="result in rsvpSearchResults">
-                            <td>{{result.firstName + " " + result.lastName}}</td>
-                            <td>{{getStatus(result)}}</td>
+                        <tr >
+                            <td>{{rsvpSearchResult.firstName + " " + rsvpSearchResult.lastName}}</td>
+                            <td>{{getStatus(rsvpSearchResult)}}</td>
                             <td>
                                 <form class="form-inline">
                                     <label class="radio-inline">
@@ -42,7 +42,7 @@
                                     <label class="radio-inline">
                                         <input ng-model="guest.answer" type="radio" name="inlineRadioOptions" id="declineRSVP" value="false"> Decline
                                     </label>
-                                    <button class="btn btn-sm btn-primary modal-submit-button" type="button" ng-click="saveRSVP(result)">Submit RSVP</button>
+                                    <button class="btn btn-sm btn-primary modal-submit-button" type="button" ng-click="saveRSVP(rsvpSearchResult)">Submit RSVP</button>
                                 </form>
                             </td>
                         </tr>

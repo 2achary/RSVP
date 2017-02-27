@@ -18,10 +18,10 @@ app.controller('RsvpCtrl', function ($scope, Guest, RSVP, $timeout) {
     $scope.alertMsg = "";
     // $scope.guest is the model for the first and last name form
     $scope.guest = {};
-    $scope.rsvpSearchResults = [];
+    $scope.rsvpSearchResult = {};
 
     $scope.searchGuest = function(){
-        $scope.rsvpSearchResults = Guest.query($scope.guest, function(){
+        $scope.rsvpSearchResult = Guest.get($scope.guest, function(){
 
         }, function(result){
             $scope.success = false;
@@ -42,9 +42,10 @@ app.controller('RsvpCtrl', function ($scope, Guest, RSVP, $timeout) {
         }
     };
 
-    $scope.saveRSVP = function(guest){
-        var newRSVP = new RSVP(guest);
-        newRSVP.$save($scope.guest, function(success){
+    $scope.saveRSVP = function(searchResult){
+        searchResult.answer = $scope.guest.answer;
+
+        RSVP.save(searchResult, {}, function(success){
             $scope.success = true;
             $scope.alertMsg = "RSVP submitted successfully!";
             $timeout(function(){$scope.alertMsg = "";}, 3000);
@@ -61,7 +62,7 @@ app.controller('RsvpCtrl', function ($scope, Guest, RSVP, $timeout) {
 });
 
 
-app.controller('GuestListCtrl', function ($scope, RSVP, Guest) {
+app.controller('GuestListCtrl', function ($scope, RSVP, Guest, GuestList) {
     $scope.guestModel = {};
     $scope.guests = [];
 
@@ -70,7 +71,7 @@ app.controller('GuestListCtrl', function ($scope, RSVP, Guest) {
     };
 
     $scope.updateGuestQuery = function() {
-        $scope.guests = Guest.query(function(guests){
+        $scope.guests = GuestList.query(function(guests){
             $scope.total_rsvp = 0;
             guests.forEach(function(guest){
                 if (guest.RSVP) {
@@ -105,12 +106,14 @@ app.controller('GuestListCtrl', function ($scope, RSVP, Guest) {
     };
 });
 
-app.constant('APIURL', 'http://127.0.0.1:5000');
-
-app.factory('RSVP', function($resource, APIURL) {
-    return $resource('/rsvp', {firstname: '@firstName', lastName: '@lastName', answer: '@answer'});
+app.factory('RSVP', function($resource) {
+    return $resource('/rsvp/firstName/:firstName/lastName/:lastName/answer/:answer', {firstname: '@firstName', lastName: '@lastName', answer: '@answer'});
 });
 
-app.factory('Guest', function($resource, APIURL) {
-    return $resource('/guest', {firstName: '@firstName', lastName: '@lastName'});
+app.factory('Guest', function($resource) {
+    return $resource('/guest/firstName/:firstName/lastName/:lastName', {firstName: '@firstName', lastName: '@lastName'});
+});
+
+app.factory('GuestList', function($resource) {
+    return $resource('/guest');
 });

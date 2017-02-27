@@ -16,12 +16,17 @@ Navigate to 127.0.0.1/#/guest_list to get to the guest management page
 """
 import json
 import os
-import shelve
 
-from flask import Flask, make_response, request
+from flask import Flask, make_response
+
+import data_access
 
 shelf_name = 'guest_list.shelf'
 guest_list_key = 'guest_list'
+guest_route = '/guest/firstName/<string:first_name>/' \
+              'lastName/<string:last_name>'
+rsvp_route = '/rsvp/firstName/<string:first_name>/' \
+              'lastName/<string:last_name>/answer/<string:answer>'
 app = Flask(__name__)
 
 # -----------------------------------------------------------------------------
@@ -45,112 +50,50 @@ def make_shelf_if_needed():
         insert_test_data()
 
 
-def get_guest_from_args(args):
-    guest = {
-        'firstName': args.get('firstName'),
-        'lastName': args.get('lastName')
-    }
-    if len(guest) == 2 and all(v is not None for k, v in guest.items()):
-        return guest
-    else:
-        raise KeyError
-
-
-def find_guest_in_list(guest, guest_list):
-    for g in guest_list:
-        if all(g[k] == v for k, v in guest.items()):
-            return g
-    else:
-        raise ValueError
-
 # -----------------------------------------------------------------------------
 # API
 # -----------------------------------------------------------------------------
 
 
-@app.route('/guest', methods=['POST'])
-def insert_guest():
-    try:
-        guest_dict = get_guest_from_args(request.args)
-    except KeyError:
-        # Return 406 Unacceptable status code
-        return json.dumps({"response": "First and last name required"}), 406
-
-    # Insert the guest dict into the shelf
-    with shelve.open(shelf_name, writeback=True) as shelf:
-        try:
-            guest_list = shelf[guest_list_key]
-        except KeyError:
-            guest_list = []
-        guest_list.append(guest_dict)
-        # shelf[guest_list_key] = guest_list
+@app.route(guest_route, methods=['POST'])
+def insert_guest(first_name, last_name):
+    data_access.insert_guest(first_name, last_name)
     return json.dumps({'response': "Successfully added guest"}), 201
 
 
-@app.route('/guest', methods=['DELETE'])
-def delete_guest():
+@app.route(guest_route, methods=['DELETE'])
+def delete_guest(first_name, last_name):
     try:
-        guest_dict = get_guest_from_args(request.args)
-    except KeyError:
-        # Return 406 Unacceptable status code
-        return json.dumps({"response": "First and last name required"}), 406
+        data_access.delete_guest(first_name, last_name)
+    except ValueError:
+        return json.dumps({'response': "Guest not found"}), 404
 
-    with shelve.open(shelf_name, writeback=False) as shelf:
-        # Get a copy of the current guest list
-        guest_list = shelf[guest_list_key]
-        try:
-            # Try to remove the dict from the guest list
-            guest_record = find_guest_in_list(guest_dict, guest_list)
-            guest_list.remove(guest_record)
-        except ValueError:
-            # Return a not found status code
-            return json.dumps({'response': "Guest not found"}), 404
-        shelf[guest_list_key] = guest_list
-        return json.dumps({"response": "Successfully deleted"})
+    return json.dumps({"response": "Successfully deleted"})
+
+
+@app.route(guest_route, methods=['GET'])
+def get_guest(first_name, last_name):
+    try:
+        return json.dumps(data_access.get_guest(first_name, last_name))
+    except ValueError:
+        return json.dumps({"response": "Guest not found"}), 404
 
 
 @app.route('/guest', methods=['GET'])
-def get_guest():
-    with shelve.open(shelf_name) as shelf:
-        guest_list = shelf[guest_list_key]
-        try:
-            guest_dict = get_guest_from_args(request.args)
-        except KeyError:
-            # Return the  whole list if the args aren't there
-            return json.dumps(guest_list)
-
-        try:
-            # Return the matching guest dict in a list
-            return json.dumps([find_guest_in_list(guest_dict, guest_list)])
-        except ValueError:
-            return json.dumps({"response": "Guest not found"}), 404
+def get_guest_list():
+    return json.dumps(data_access.get_guest_list())
 
 
-@app.route('/rsvp', methods=['POST'])
-def rsvp():
+@app.route(rsvp_route, methods=['POST'])
+def rsvp(first_name, last_name, answer):
+    if answer == 'true':
+        answer = True
+    else:
+        answer = False
     try:
-        guest_dict = get_guest_from_args(request.args)
-        answer = True if request.args['answer'] == 'true' else False
-    except KeyError:
-        return json.dumps({
-            "response": "First name, last name and answer required"
-        }), 406
-    with shelve.open(shelf_name) as shelf:
-        guest_list = shelf[guest_list_key]
-        try:
-            # Find the guest matching the query string and its index
-            # in the guest list
-            matching_guest = find_guest_in_list(guest_dict, guest_list)
-            matching_index = guest_list.index(matching_guest)
-        except ValueError:
-            return json.dumps({"response": "Guest not found"}), 404
-
-        # Update the rsvp status
-        guest_list[matching_index]['RSVP'] = answer
-        # Store the updated guest_list back in the shlef
-        shelf[guest_list_key] = guest_list
-        return json.dumps({"response": "Successfully submitted RSVP"})
-
+        return json.dumps(data_access.rsvp(first_name, last_name, answer))
+    except (ValueError, Exception) as e:
+        return json.dumps({"response": "Guest not found"}), 404
 
 if __name__ == '__main__':
     make_shelf_if_needed()
